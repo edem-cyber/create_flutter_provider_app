@@ -4,7 +4,7 @@ import 'package:noteapp/app_localizations.dart';
 import 'package:noteapp/providers/auth_provider.dart';
 import 'package:noteapp/providers/theme_provider.dart';
 import 'package:noteapp/routes.dart';
-import 'package:noteapp/ui/setting/setting_language_actions.dart';
+import 'package:noteapp/views/setting/setting_language_actions.dart';
 import 'package:provider/provider.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -28,7 +28,7 @@ class SettingScreen extends StatelessWidget {
               .translate("settingThemeListSubTitle")),
           trailing: Switch(
             activeColor: Theme.of(context).appBarTheme.color,
-            activeTrackColor: Theme.of(context).textTheme.title.color,
+            activeTrackColor: Theme.of(context).textTheme.headline6.color,
             value: Provider.of<ThemeProvider>(context).isDarkModeOn,
             onChanged: (booleanValue) {
               Provider.of<ThemeProvider>(context, listen: false)
@@ -37,8 +37,10 @@ class SettingScreen extends StatelessWidget {
           ),
         ),
         ListTile(
-          title: Text(AppLocalizations.of(context).translate("settingLanguageListTitle")),
-          subtitle: Text(AppLocalizations.of(context).translate("settingLanguageListSubTitle")),
+          title: Text(AppLocalizations.of(context)
+              .translate("settingLanguageListTitle")),
+          subtitle: Text(AppLocalizations.of(context)
+              .translate("settingLanguageListSubTitle")),
           trailing: SettingLanguageActions(),
         ),
         ListTile(
@@ -46,7 +48,7 @@ class SettingScreen extends StatelessWidget {
               AppLocalizations.of(context).translate("settingLogoutListTitle")),
           subtitle: Text(AppLocalizations.of(context)
               .translate("settingLogoutListSubTitle")),
-          trailing: RaisedButton(
+          trailing: ElevatedButton(
               onPressed: () {
                 _confirmSignOut(context);
               },
@@ -61,8 +63,9 @@ class SettingScreen extends StatelessWidget {
     showPlatformDialog(
         context: context,
         builder: (_) => PlatformAlertDialog(
-              android: (_) => MaterialAlertDialogData(
-                  backgroundColor: Theme.of(context).appBarTheme.color),
+              material: (BuildContext context, PlatformTarget platformTarget) =>
+                  MaterialAlertDialogData(
+                      backgroundColor: Theme.of(context).appBarTheme.color),
               title: Text(
                   AppLocalizations.of(context).translate("alertDialogTitle")),
               content: Text(

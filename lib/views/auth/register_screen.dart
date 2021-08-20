@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:noteapp/app_localizations.dart';
-import 'package:noteapp/flavor.dart';
+import 'package:noteapp/models/user_model.dart';
 import 'package:noteapp/providers/auth_provider.dart';
 import 'package:noteapp/routes.dart';
 import 'package:provider/provider.dart';
 
-class SignInScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
@@ -48,6 +48,12 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget _buildForm(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    bool _obscure = true;
+    _toggleObscure() {
+      setState(() {
+        _obscure = !_obscure;
+      });
+    }
 
     return Form(
         key: _formKey,
@@ -67,7 +73,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 TextFormField(
                   controller: _emailController,
-                  style: Theme.of(context).textTheme.body1,
+                  style: Theme.of(context).textTheme.bodyText2,
                   validator: (value) => value.isEmpty
                       ? AppLocalizations.of(context)
                           .translate("loginTxtErrorEmail")
@@ -84,17 +90,25 @@ class _SignInScreenState extends State<SignInScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: TextFormField(
-                    obscureText: true,
+                    obscureText: _obscure,
                     maxLength: 12,
                     controller: _passwordController,
-                    style: Theme.of(context).textTheme.body1,
+                    style: Theme.of(context).textTheme.bodyText2,
                     validator: (value) => value.length < 6
                         ? AppLocalizations.of(context)
                             .translate("loginTxtErrorPassword")
                         : null,
                     decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.remove_red_eye),
+                          onPressed: () {
+                            setState(() {
+                              _toggleObscure();
+                            });
+                          },
+                        ),
                         prefixIcon: Icon(
-                          Icons.lock,
+                          Icons.keyboard,
                           color: Theme.of(context).iconTheme.color,
                         ),
                         labelText: AppLocalizations.of(context)
@@ -102,35 +116,37 @@ class _SignInScreenState extends State<SignInScreen> {
                         border: OutlineInputBorder()),
                   ),
                 ),
-                authProvider.status == Status.Authenticating
+                authProvider.status == Status.Registering
                     ? Center(
                         child: CircularProgressIndicator(),
                       )
-                    : RaisedButton(
+                    : ElevatedButton(
                         child: Text(
                           AppLocalizations.of(context)
-                              .translate("loginBtnSignIn"),
-                          style: Theme.of(context).textTheme.button,
+                              .translate("loginBtnSignUp"),
+                          style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
                             FocusScope.of(context)
                                 .unfocus(); //to hide the keyboard - if any
 
-                            bool status =
-                                await authProvider.signInWithEmailAndPassword(
+                            UserModel user =
+                                await authProvider.registerWithEmailAndPassword(
                                     _emailController.text,
                                     _passwordController.text);
+                          
 
-                            if (!status) {
-                              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                            if (user == null) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
                                 content: Text(AppLocalizations.of(context)
                                     .translate("loginTxtErrorSignIn")),
                               ));
                             }
                           }
                         }),
-                authProvider.status == Status.Authenticating
+                authProvider.status == Status.Registering
                     ? Center(
                         child: null,
                       )
@@ -139,36 +155,26 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: Center(
                             child: Text(
                           AppLocalizations.of(context)
-                              .translate("loginTxtDontHaveAccount"),
+                              .translate("loginTxtHaveAccount"),
                           style: Theme.of(context).textTheme.button,
                         )),
                       ),
-                authProvider.status == Status.Authenticating
+                authProvider.status == Status.Registering
                     ? Center(
                         child: null,
                       )
-                    : FlatButton(
-                        child: Text(AppLocalizations.of(context)
-                            .translate("loginBtnLinkCreateAccount")),
-                        textColor: Theme.of(context).iconTheme.color,
+                    : TextButton(
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate("loginBtnLinkSignIn"),
+                          style: TextStyle(
+                              color: Theme.of(context).iconTheme.color),
+                        ),
                         onPressed: () {
                           Navigator.of(context)
-                              .pushReplacementNamed(Routes.register);
+                              .pushReplacementNamed(Routes.login);
                         },
                       ),
-                Center(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 70,
-                    ),
-                    Text(
-                      Provider.of<Flavor>(context).toString(),
-                      style: Theme.of(context).textTheme.body2,
-                    ),
-                  ],
-                )),
               ],
             ),
           ),

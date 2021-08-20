@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:noteapp/app_localizations.dart';
 import 'package:noteapp/routes.dart';
@@ -27,11 +28,10 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Text(
               AppLocalizations.of(context).translate("splashTitle"),
           style: TextStyle(
-            fontSize: Theme.of(context).textTheme.headline.fontSize,
+            fontSize: Theme.of(context).textTheme.headline5.fontSize,
           ),
         )),
-        FlutterLogo(
-          size: 128,
+        CupertinoActivityIndicator(radius: MediaQuery.of(context).size.width /3,
         ),
       ],
     )));

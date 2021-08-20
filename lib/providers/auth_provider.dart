@@ -10,7 +10,7 @@ enum Status {
   Registering
 }
 /*
-The UI will depends on the Status to decide which screen/action to be done.
+The UI will depend on the Status to decide which screen/action to be done.
 
 - Uninitialized - Checking user is logged or not, the Splash Screen will be shown
 - Authenticated - User is authenticated successfully, Home Page will be shown
@@ -31,36 +31,37 @@ class AuthProvider extends ChangeNotifier {
 
   Status get status => _status;
 
-  Stream<UserModel> get user => _auth.onAuthStateChanged.map(_userFromFirebase);
+  Stream<UserModel> get user => _auth.authStateChanges().map(_userFromFirebase);
 
   AuthProvider() {
     //initialise object
     _auth = FirebaseAuth.instance;
 
     //listener for authentication changes such as user sign in and sign out
-    _auth.onAuthStateChanged.listen(onAuthStateChanged);
+    _auth.authStateChanges().listen(onAuthStateChanged);
   }
 
-  //Create user object based on the given FirebaseUser
-  UserModel _userFromFirebase(FirebaseUser user) {
+  //Create user object based on the given User
+  UserModel _userFromFirebase(User user) {
     if (user == null) {
       return null;
     }
+    print("user model check");
 
     return UserModel(
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
         phoneNumber: user.phoneNumber,
-        photoUrl: user.photoUrl);
+        photoUrl: user.photoURL);
   }
 
   //Method to detect live auth changes such as user sign in and sign out
-  Future<void> onAuthStateChanged(FirebaseUser firebaseUser) async {
-    if (firebaseUser == null) {
+  Future<void> onAuthStateChanged(User user) async {
+    if (user == null) {
       _status = Status.Unauthenticated;
     } else {
-      _userFromFirebase(firebaseUser);
+      _userFromFirebase(user);
       _status = Status.Authenticated;
     }
     notifyListeners();
@@ -72,12 +73,13 @@ class AuthProvider extends ChangeNotifier {
     try {
       _status = Status.Registering;
       notifyListeners();
-      final AuthResult result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+              print("1 check");
+      final UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email.trim(), password: password.trim());
 
       return _userFromFirebase(result.user);
     } catch (e) {
-      print("Error on the new user registration = " +e.toString());
+      print("Error on the new user registration = " + e.toString());
       _status = Status.Unauthenticated;
       notifyListeners();
       return null;
@@ -89,26 +91,25 @@ class AuthProvider extends ChangeNotifier {
     try {
       _status = Status.Authenticating;
       notifyListeners();
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await _auth.signInWithEmailAndPassword(email: email.trim(), password: password.trim());
       return true;
     } catch (e) {
-      print("Error on the sign in = " +e.toString());
+      print("Error on the sign in = " + e.toString());
       _status = Status.Unauthenticated;
       notifyListeners();
-      return false;
+      return null;
     }
   }
 
   //Method to handle password reset email
   Future<void> sendPasswordResetEmail(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
+    await _auth.sendPasswordResetEmail(email: email.trim());
   }
 
   //Method to handle user signing out
-  Future signOut() async {
-    _auth.signOut();
+  Future<void> signOut() async {
+    await _auth.signOut();
     _status = Status.Unauthenticated;
     notifyListeners();
-    return Future.delayed(Duration.zero);
   }
 }

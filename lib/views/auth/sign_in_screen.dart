@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:noteapp/app_localizations.dart';
-import 'package:noteapp/models/user_model.dart';
+import 'package:noteapp/flavor.dart';
 import 'package:noteapp/providers/auth_provider.dart';
 import 'package:noteapp/routes.dart';
 import 'package:provider/provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class SignInScreen extends StatefulWidget {
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
@@ -67,15 +67,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 TextFormField(
                   controller: _emailController,
-                  style: Theme.of(context).textTheme.body1,
-                  validator: (value) =>
-                      value.isEmpty ? AppLocalizations.of(context).translate("loginTxtErrorEmail") : null,
+                  style: Theme.of(context).textTheme.bodyText2,
+                  validator: (value) => value.isEmpty
+                      ? AppLocalizations.of(context)
+                          .translate("loginTxtErrorEmail")
+                      : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.email,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      labelText: AppLocalizations.of(context).translate("loginTxtEmail"),
+                      labelText: AppLocalizations.of(context)
+                          .translate("loginTxtEmail"),
                       border: OutlineInputBorder()),
                 ),
                 Padding(
@@ -84,46 +87,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     obscureText: true,
                     maxLength: 12,
                     controller: _passwordController,
-                    style: Theme.of(context).textTheme.body1,
+                    style: Theme.of(context).textTheme.bodyText2,
                     validator: (value) => value.length < 6
-                        ? AppLocalizations.of(context).translate("loginTxtErrorPassword")
+                        ? AppLocalizations.of(context)
+                            .translate("loginTxtErrorPassword")
                         : null,
                     decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.lock,
                           color: Theme.of(context).iconTheme.color,
                         ),
-                        labelText: AppLocalizations.of(context).translate("loginTxtPassword"),
+                        labelText: AppLocalizations.of(context)
+                            .translate("loginTxtPassword"),
                         border: OutlineInputBorder()),
                   ),
                 ),
-                authProvider.status == Status.Registering
+                authProvider.status == Status.Authenticating
                     ? Center(
                         child: CircularProgressIndicator(),
                       )
-                    : RaisedButton(
+                    : ElevatedButton(
                         child: Text(
-                          AppLocalizations.of(context).translate("loginBtnSignUp"),
-                          style: Theme.of(context).textTheme.button,
+                          AppLocalizations.of(context)
+                              .translate("loginBtnSignIn"),
+                          style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
                             FocusScope.of(context)
                                 .unfocus(); //to hide the keyboard - if any
 
-                            UserModel userModel =
-                                await authProvider.registerWithEmailAndPassword(
+                            bool status =
+                                await authProvider.signInWithEmailAndPassword(
                                     _emailController.text,
                                     _passwordController.text);
 
-                            if (userModel == null) {
-                              _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                content: Text(AppLocalizations.of(context).translate("loginTxtErrorSignIn")),
+                            if (status == null) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                           
+                                content: Text(AppLocalizations.of(context)
+                                    .translate("loginTxtErrorSignIn")),
                               ));
                             }
                           }
                         }),
-                authProvider.status == Status.Registering
+                authProvider.status == Status.Authenticating
                     ? Center(
                         child: null,
                       )
@@ -131,22 +140,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         padding: const EdgeInsets.only(top: 48),
                         child: Center(
                             child: Text(
-                              AppLocalizations.of(context).translate("loginTxtHaveAccount"),
+                          AppLocalizations.of(context)
+                              .translate("loginTxtDontHaveAccount"),
                           style: Theme.of(context).textTheme.button,
                         )),
                       ),
-                authProvider.status == Status.Registering
+                authProvider.status == Status.Authenticating
                     ? Center(
                         child: null,
                       )
-                    : FlatButton(
-                        child: Text(AppLocalizations.of(context).translate("loginBtnLinkSignIn")),
-                        textColor: Theme.of(context).iconTheme.color,
+                    : TextButton(
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate("loginBtnLinkCreateAccount"),
+                          style: TextStyle(
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.of(context)
-                              .pushReplacementNamed(Routes.login);
+                              .pushReplacementNamed(Routes.register);
                         },
                       ),
+                Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 70,
+                    ),
+                    Text(
+                      Provider.of<Flavor>(context).toString(),
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  ],
+                )),
               ],
             ),
           ),

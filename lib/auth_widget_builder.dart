@@ -13,21 +13,21 @@ import 'package:provider/provider.dart';
 * the user logged data uid.
  */
 class AuthWidgetBuilder extends StatelessWidget {
-  const AuthWidgetBuilder(
-      {Key key, @required this.builder, @required this.databaseBuilder})
-      : super(key: key);
   final Widget Function(BuildContext, AsyncSnapshot<UserModel>) builder;
   final FirestoreDatabase Function(BuildContext context, String uid)
       databaseBuilder;
+  const AuthWidgetBuilder(
+      {Key key, @required this.builder, @required this.databaseBuilder})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthProvider>(context, listen: false);
     return StreamBuilder<UserModel>(
       stream: authService.user,
-      builder: (BuildContext context, AsyncSnapshot<UserModel> snapshot) {
+      builder: (context, AsyncSnapshot<UserModel> snapshot) {
         final UserModel user = snapshot.data;
-        if (user != null) {
+        if (snapshot.connectionState == ConnectionState.active) {
           /*
           * For any other Provider services that rely on user data can be
           * added to the following MultiProvider list.

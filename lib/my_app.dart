@@ -9,8 +9,8 @@ import 'package:noteapp/providers/language_provider.dart';
 import 'package:noteapp/providers/theme_provider.dart';
 import 'package:noteapp/routes.dart';
 import 'package:noteapp/services/firestore_database.dart';
-import 'package:noteapp/ui/auth/sign_in_screen.dart';
-import 'package:noteapp/ui/home/home.dart';
+import 'package:noteapp/views/auth/sign_in_screen.dart';
+import 'package:noteapp/views/home/home.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -26,10 +26,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
-      builder: (_, themeProviderRef, __) {
+      builder: (BuildContext context, themeProviderRef, _) {
         //{context, data, child}
         return Consumer<LanguageProvider>(
-          builder: (_, languageProviderRef, __) {
+          builder: (BuildContext context, languageProviderRef, __) {
             return AuthWidgetBuilder(
               databaseBuilder: databaseBuilder,
               builder: (BuildContext context,

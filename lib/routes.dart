@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:noteapp/ui/auth/register_screen.dart';
-import 'package:noteapp/ui/auth/sign_in_screen.dart';
-import 'package:noteapp/ui/setting/setting_screen.dart';
-import 'package:noteapp/ui/splash/splash_screen.dart';
-import 'package:noteapp/ui/todo/create_edit_todo_screen.dart';
-import 'package:noteapp/ui/todo/todos_screen.dart';
+import 'package:noteapp/views/auth/register_screen.dart';
+import 'package:noteapp/views/auth/sign_in_screen.dart';
+import 'package:noteapp/views/setting/setting_screen.dart';
+import 'package:noteapp/views/todo/create_edit_todo_screen.dart';
+import 'package:noteapp/views/splash/splash_screen.dart';
+import 'package:noteapp/views/todo/todos_screen.dart';
 
 class Routes {
   Routes._(); //this is to prevent anyone from instantiate this object

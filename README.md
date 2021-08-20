@@ -208,7 +208,7 @@ When using Firestore, is quite common to organise user data inside documents or 
 
 When reading or writing data, the app need to access to the user `uid`. This can change at runtime, as user can log out and sign back in with a different account, which eventually a different `uid`.
 
-This, the `FirestoreDatabase` takes the `uid` as a constructor parameter. So, the moment we have `FirebaseUser` upon user logged in, we can just pass the `uid` to the Firestore database when performing CRUD operations.
+This, the `FirestoreDatabase` takes the `uid` as a constructor parameter. So, the moment we have `User` upon user logged in, we can just pass the `uid` to the Firestore database when performing CRUD operations.
 
 To achieve this, `FirestoreDatabase` will be re-created everytime `onAuthStateChanged` changed.
 

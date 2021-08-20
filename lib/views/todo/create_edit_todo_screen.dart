@@ -53,7 +53,7 @@ class _CreateEditTodoScreenState extends State<CreateEditTodoScreen> {
             ? AppLocalizations.of(context).translate("todosCreateEditAppBarTitleEditTxt")
             : AppLocalizations.of(context).translate("todosCreateEditAppBarTitleNewTxt")),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   FocusScope.of(context).unfocus();
@@ -102,7 +102,7 @@ class _CreateEditTodoScreenState extends State<CreateEditTodoScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _taskController,
-                style: Theme.of(context).textTheme.body1,
+                style: Theme.of(context).textTheme.bodyText2,
                 validator: (value) => value.isEmpty
                     ? AppLocalizations.of(context).translate("todosCreateEditTaskNameValidatorMsg")
                     : null,
@@ -117,7 +117,7 @@ class _CreateEditTodoScreenState extends State<CreateEditTodoScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: TextFormField(
                   controller: _extraNoteController,
-                  style: Theme.of(context).textTheme.body1,
+                  style: Theme.of(context).textTheme.bodyText2,
                   maxLines: 15,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
